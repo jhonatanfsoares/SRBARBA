@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' | Sr. Barba'">Sr. Barba</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/png" th:href="@{/img/logo.png}">
+</head>
+
+<body>
+
+<nav th:fragment="navbar(ativo)" class="nav">
+    <div class="container">
+        <a th:href="@{/}" class="brand"><img th:src="@{/img/logo.png}" alt="Sr. Barba" class="brand-logo"> Sr. <span>Barba</span></a>
+        <div class="links">
+            <th:block sec:authorize="!isAuthenticated()">
+                <a th:href="@{/}" th:classappend="${ativo == 'home'} ? 'active'">Início</a>
+                <a th:href="@{/login}" th:classappend="${ativo == 'login'} ? 'active'">Entrar</a>
+                <a th:href="@{/cadastro}" class="btn btn-sm">Criar conta</a>
+            </th:block>
+            <th:block sec:authorize="hasRole('CLIENTE')">
+                <a th:href="@{/cliente}" th:classappend="${ativo == 'meus'} ? 'active'">Meus agendamentos</a>
+                <a th:href="@{/cliente/agendar}" class="btn btn-sm">Agendar horário</a>
+            </th:block>
+            <th:block sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin}" th:classappend="${ativo == 'dashboard'} ? 'active'">Painel</a>
+                <a th:href="@{/admin/agenda}" th:classappend="${ativo == 'agenda'} ? 'active'">Agenda</a>
+                <a th:href="@{/admin/clientes}" th:classappend="${ativo == 'clientes'} ? 'active'">Clientes</a>
+                <a th:href="@{/admin/servicos}" th:classappend="${ativo == 'servicos'} ? 'active'">Serviços</a>
+                <a th:href="@{/admin/barbeiros}" th:classappend="${ativo == 'barbeiros'} ? 'active'">Equipe</a>
+                <a th:href="@{/admin/empresa}" th:classappend="${ativo == 'empresa'} ? 'active'">Empresa</a>
+            </th:block>
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-link">Sair</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div th:fragment="alertas">
+    <div th:if="${sucesso}" class="alert alert-ok" th:text="${sucesso}"></div>
+    <div th:if="${erro}" class="alert alert-erro" th:text="${erro}"></div>
+</div>
+
+<footer th:fragment="rodape" class="footer">
+    <div class="container">
+        <div>
+            <strong th:text="${empresa.nomeFantasia}">Sr. Barba</strong><br>
+            <span th:text="${empresa.razaoSocial}"></span><br>
+            CNPJ <span th:text="${empresa.cnpj}"></span>
+        </div>
+        <div>
+            <span th:text="${empresa.enderecoCompleto}"></span><br>
+            Tel. <span th:text="${empresa.telefone}"></span> · WhatsApp <span th:text="${empresa.whatsapp}"></span>
+        </div>
+        <div>
+            Terça a sábado, <span th:text="${empresa.horarioAbertura}"></span> às
+            <span th:text="${empresa.horarioFechamento}"></span><br>
+            <span th:text="${empresa.email}"></span> · <span th:text="${empresa.instagram}"></span>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
