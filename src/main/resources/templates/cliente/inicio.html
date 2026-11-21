@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Meus agendamentos')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('meus')}"></nav>
+
+<main class="container">
+    <h1 th:text="'Olá, ' + ${cliente.nome} + '!'">Olá!</h1>
+    <p class="muted" th:if="${cliente.aniversarianteDoMes}">🎂 Feliz mês de aniversário! Peça seu desconto no balcão.</p>
+
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <div class="card">
+        <div class="inline-form" style="justify-content:space-between;margin-bottom:14px">
+            <h2 style="margin:0">Meus agendamentos</h2>
+            <a th:href="@{/cliente/agendar}" class="btn">+ Novo agendamento</a>
+        </div>
+
+        <p th:if="${#lists.isEmpty(agendamentos)}" class="muted">Você ainda não tem agendamentos. Que tal marcar o primeiro?</p>
+
+        <table th:unless="${#lists.isEmpty(agendamentos)}">
+            <thead>
+            <tr><th>Data</th><th>Horário</th><th>Serviço</th><th>Barbeiro</th><th>Valor</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="a : ${agendamentos}">
+                <td th:text="${#temporals.format(a.dataHoraInicio, 'dd/MM/yyyy (EEE)')}"></td>
+                <td th:text="${#temporals.format(a.dataHoraInicio, 'HH:mm')} + ' – ' + ${#temporals.format(a.dataHoraFim, 'HH:mm')}"></td>
+                <td th:text="${a.servico.nome}"></td>
+                <td th:text="${a.barbeiro.nome}"></td>
+                <td th:text="'R$ ' + ${#numbers.formatDecimal(a.valor, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td><span class="badge" th:classappend="'badge-' + ${a.status}" th:text="${a.status.descricao}"></span></td>
+                <td class="right">
+                    <form th:if="${a.status.name() == 'AGENDADO' and a.dataHoraInicio.isAfter(agora)}"
+                          th:action="@{/cliente/agendamentos/{id}/cancelar(id=${a.id})}" method="post"
+                          onsubmit="return confirm('Cancelar este agendamento?')">
+                        <button class="btn btn-sm btn-danger" type="submit">Cancelar</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="muted" style="font-size:.82rem;margin-top:12px">
+            Cancelamentos pelo site com até <span th:text="${empresa.antecedenciaCancelamentoHoras}"></span>h de antecedência.
+            Depois disso, ligue para <span th:text="${empresa.telefone}"></span>.
+        </p>
+    </div>
+
+    <div class="card">
+        <h3>Meus dados</h3>
+        <div class="grid-2">
+            <p><span class="muted">E-mail:</span> <span th:text="${cliente.email}"></span></p>
+            <p><span class="muted">Telefone:</span> <span th:text="${cliente.telefone}"></span></p>
+            <p><span class="muted">CPF:</span> <span th:text="${cliente.cpf}"></span></p>
+            <p><span class="muted">Cliente desde:</span> <span th:text="${#temporals.format(cliente.dataCadastro, 'dd/MM/yyyy')}"></span></p>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: rodape}"></footer>
+</body>
+</html>

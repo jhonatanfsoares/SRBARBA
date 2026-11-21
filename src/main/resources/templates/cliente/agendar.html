@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Agendar horário')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('agendar')}"></nav>
+
+<main class="container">
+    <h1>Agendar horário</h1>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <!-- Etapa 1: escolher serviço, barbeiro e data -->
+    <div class="card">
+        <h3>1. Escolha o serviço, o barbeiro e o dia</h3>
+        <form th:action="@{/cliente/agendar}" th:object="${form}" method="get" class="inline-form">
+            <div class="field" style="flex:2;min-width:220px">
+                <label for="servicoId">Serviço</label>
+                <select id="servicoId" th:field="*{servicoId}" required>
+                    <option value="">Selecione...</option>
+                    <option th:each="s : ${servicos}" th:value="${s.id}"
+                            th:text="${s.nome} + ' — R$ ' + ${#numbers.formatDecimal(s.preco, 1, 'POINT', 2, 'COMMA')} + ' (' + ${s.duracaoMinutos} + ' min)'"></option>
+                </select>
+            </div>
+            <div class="field" style="flex:1;min-width:180px">
+                <label for="barbeiroId">Barbeiro</label>
+                <select id="barbeiroId" th:field="*{barbeiroId}" required>
+                    <option value="">Selecione...</option>
+                    <option th:each="b : ${barbeiros}" th:value="${b.id}" th:text="${b.nome}"></option>
+                </select>
+            </div>
+            <div class="field" style="flex:1;min-width:160px">
+                <label for="data">Data</label>
+                <input type="date" id="data" th:field="*{data}" required>
+            </div>
+            <button type="submit" class="btn">Ver horários</button>
+        </form>
+    </div>
+
+    <!-- Etapa 2: escolher o horário livre e confirmar -->
+    <div class="card" th:if="${horarios != null}">
+        <h3>2. Escolha o horário — <span th:text="${#temporals.format(form.data, 'dd/MM/yyyy (EEEE)')}"></span></h3>
+
+        <p th:if="${#lists.isEmpty(horarios)}" class="muted">
+            Nenhum horário livre neste dia. A barbearia funciona de terça a sábado,
+            das <span th:text="${empresa.horarioAbertura}"></span> às <span th:text="${empresa.horarioFechamento}"></span>.
+            Tente outra data ou outro barbeiro.
+        </p>
+
+        <form th:unless="${#lists.isEmpty(horarios)}" th:action="@{/cliente/agendar}" method="post">
+            <input type="hidden" name="servicoId" th:value="${form.servicoId}">
+            <input type="hidden" name="barbeiroId" th:value="${form.barbeiroId}">
+            <input type="hidden" name="data" th:value="${form.data}">
+            <div class="slots">
+                <label class="slot" th:each="h : ${horarios}">
+                    <input type="radio" name="horario" th:value="${h}" required>
+                    <span th:text="${h}">09:00</span>
+                </label>
+            </div>
+            <div class="field">
+                <label for="observacao">Observação (opcional)</label>
+                <input id="observacao" name="observacao" maxlength="255" placeholder="Ex.: quero manter o comprimento em cima">
+            </div>
+            <button type="submit" class="btn">Confirmar agendamento</button>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: rodape}"></footer>
+</body>
+</html>
