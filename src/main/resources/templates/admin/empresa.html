@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dados da empresa')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('empresa')}"></nav>
+
+<main class="container">
+    <h1>Dados da empresa</h1>
+
+    <div class="cols">
+        <div class="card">
+            <h3>Identificação e registros legais</h3>
+            <table>
+                <tr><th>Razão social</th><td th:text="${empresa.razaoSocial}"></td></tr>
+                <tr><th>Nome fantasia</th><td th:text="${empresa.nomeFantasia}"></td></tr>
+                <tr><th>CNPJ</th><td th:text="${empresa.cnpj}"></td></tr>
+                <tr><th>Inscrição municipal</th><td th:text="${empresa.inscricaoMunicipal}"></td></tr>
+                <tr><th>CNAE principal</th><td th:text="${empresa.cnae}"></td></tr>
+                <tr><th>Regime tributário</th><td th:text="${empresa.regimeTributario}"></td></tr>
+                <tr><th>Alvará de funcionamento</th><td th:text="${empresa.alvaraFuncionamento}"></td></tr>
+                <tr><th>Licença sanitária</th><td th:text="${empresa.licencaSanitaria}"></td></tr>
+                <tr><th>Responsável legal</th><td th:text="${empresa.responsavelLegal}"></td></tr>
+                <tr><th>Fundação</th><td th:text="${#temporals.format(empresa.dataFundacao, 'dd/MM/yyyy')}"></td></tr>
+                <tr><th>Capital social</th><td th:text="'R$ ' + ${#numbers.formatDecimal(empresa.capitalSocial, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+            </table>
+        </div>
+        <div>
+            <div class="card">
+                <h3>Endereço e contato</h3>
+                <table>
+                    <tr><th>Endereço</th><td th:text="${empresa.enderecoCompleto}"></td></tr>
+                    <tr><th>Telefone</th><td th:text="${empresa.telefone}"></td></tr>
+                    <tr><th>WhatsApp</th><td th:text="${empresa.whatsapp}"></td></tr>
+                    <tr><th>E-mail</th><td th:text="${empresa.email}"></td></tr>
+                    <tr><th>Instagram</th><td th:text="${empresa.instagram}"></td></tr>
+                </table>
+            </div>
+            <div class="card">
+                <h3>Operação</h3>
+                <table>
+                    <tr><th>Funcionamento</th><td>Terça a sábado</td></tr>
+                    <tr><th>Horário</th><td th:text="${empresa.horarioAbertura} + ' às ' + ${empresa.horarioFechamento}"></td></tr>
+                    <tr><th>Intervalo da agenda</th><td th:text="${empresa.intervaloAgendaMinutos} + ' minutos'"></td></tr>
+                    <tr><th>Cadeiras</th><td th:text="${empresa.quantidadeCadeiras}"></td></tr>
+                    <tr><th>Cancelamento pelo cliente</th><td th:text="'até ' + ${empresa.antecedenciaCancelamentoHoras} + 'h antes'"></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

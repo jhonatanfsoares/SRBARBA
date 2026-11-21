@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Serviços')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('servicos')}"></nav>
+
+<main class="container">
+    <h1>Serviços</h1>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <div class="card">
+        <h3 th:text="${servico.id == null} ? 'Novo serviço' : 'Editar serviço'"></h3>
+        <form th:action="@{/admin/servicos}" th:object="${servico}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <div class="grid-2">
+                <div class="field">
+                    <label for="nome">Nome</label>
+                    <input id="nome" th:field="*{nome}">
+                    <div class="field-error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+                </div>
+                <div class="field">
+                    <label for="descricao">Descrição</label>
+                    <input id="descricao" th:field="*{descricao}">
+                </div>
+                <div class="field">
+                    <label for="preco">Preço (R$)</label>
+                    <input id="preco" type="number" step="0.01" min="0" th:field="*{preco}">
+                    <div class="field-error" th:if="${#fields.hasErrors('preco')}" th:errors="*{preco}"></div>
+                </div>
+                <div class="field">
+                    <label for="duracaoMinutos">Duração (minutos)</label>
+                    <input id="duracaoMinutos" type="number" step="5" min="10" th:field="*{duracaoMinutos}">
+                    <div class="field-error" th:if="${#fields.hasErrors('duracaoMinutos')}" th:errors="*{duracaoMinutos}"></div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="check"><input type="checkbox" th:field="*{ativo}"> Disponível para agendamento</label>
+            </div>
+            <button class="btn" type="submit">Salvar</button>
+            <a th:if="${servico.id != null}" th:href="@{/admin/servicos}" class="btn btn-outline">Novo</a>
+        </form>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead><tr><th>Serviço</th><th>Descrição</th><th class="right">Preço</th><th class="right">Duração</th><th>Situação</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="s : ${servicos}">
+                <td th:text="${s.nome}"></td>
+                <td class="muted" th:text="${s.descricao}"></td>
+                <td class="right" th:text="'R$ ' + ${#numbers.formatDecimal(s.preco, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td class="right" th:text="${s.duracaoMinutos} + ' min'"></td>
+                <td><span class="badge" th:classappend="${s.ativo} ? 'badge-ativo' : 'badge-inativo'"
+                          th:text="${s.ativo} ? 'Ativo' : 'Inativo'"></span></td>
+                <td><a class="btn btn-sm btn-outline" th:href="@{/admin/servicos/{id}(id=${s.id})}">Editar</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

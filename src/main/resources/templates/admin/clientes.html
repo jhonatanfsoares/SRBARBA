@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Clientes')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('clientes')}"></nav>
+
+<main class="container">
+    <h1>Clientes</h1>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <div class="card">
+        <form th:action="@{/admin/clientes}" method="get" class="inline-form">
+            <div class="field" style="flex:1">
+                <label for="q">Buscar por nome, e-mail, telefone ou CPF</label>
+                <input id="q" name="q" th:value="${q}">
+            </div>
+            <button class="btn" type="submit">Buscar</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <p class="muted" th:text="${#lists.size(clientes)} + ' cliente(s) encontrado(s)'"></p>
+        <table>
+            <thead>
+            <tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>CPF</th><th>Nascimento</th><th>Cadastro</th><th>Comunicações</th><th>Situação</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${clientes}">
+                <td>
+                    <span th:text="${c.nome}"></span>
+                    <span th:if="${c.aniversarianteDoMes}" title="Aniversariante do mês">🎂</span>
+                </td>
+                <td th:text="${c.email}"></td>
+                <td th:text="${c.telefone}"></td>
+                <td th:text="${c.cpf}"></td>
+                <td th:text="${c.dataNascimento != null} ? ${#temporals.format(c.dataNascimento, 'dd/MM/yyyy')} : '-'"></td>
+                <td th:text="${#temporals.format(c.dataCadastro, 'dd/MM/yyyy')}"></td>
+                <td th:text="${c.aceitaComunicacoes} ? 'Sim' : 'Não'"></td>
+                <td><span class="badge" th:classappend="${c.ativo} ? 'badge-ativo' : 'badge-inativo'"
+                          th:text="${c.ativo} ? 'Ativo' : 'Bloqueado'"></span></td>
+                <td>
+                    <form th:action="@{/admin/clientes/{id}/ativo(id=${c.id})}" method="post">
+                        <button class="btn btn-sm btn-outline" type="submit" th:text="${c.ativo} ? 'Bloquear' : 'Reativar'"></button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Agenda')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('agenda')}"></nav>
+
+<main class="container">
+    <h1>Agenda</h1>
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+
+    <div class="card">
+        <form th:action="@{/admin/agenda}" method="get" class="inline-form">
+            <a class="btn btn-outline" th:href="@{/admin/agenda(data=${data.minusDays(1)})}">‹ Dia anterior</a>
+            <div class="field">
+                <label for="data">Data</label>
+                <input type="date" id="data" name="data" th:value="${data}">
+            </div>
+            <button class="btn" type="submit">Ver</button>
+            <a class="btn btn-outline" th:href="@{/admin/agenda(data=${data.plusDays(1)})}">Próximo dia ›</a>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3 th:text="${#temporals.format(data, 'EEEE, dd/MM/yyyy')}"></h3>
+        <p th:if="${#lists.isEmpty(agendamentos)}" class="muted">Nenhum agendamento neste dia.</p>
+        <table th:unless="${#lists.isEmpty(agendamentos)}">
+            <thead>
+            <tr><th>Horário</th><th>Cliente</th><th>Telefone</th><th>Serviço</th><th>Barbeiro</th><th>Valor</th><th>Status</th><th>Ações</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="a : ${agendamentos}">
+                <td th:text="${#temporals.format(a.dataHoraInicio, 'HH:mm')} + '–' + ${#temporals.format(a.dataHoraFim, 'HH:mm')}"></td>
+                <td>
+                    <span th:text="${a.cliente.nome}"></span>
+                    <div class="muted" style="font-size:.78rem" th:if="${a.observacao}" th:text="'“' + ${a.observacao} + '”'"></div>
+                </td>
+                <td th:text="${a.cliente.telefone}"></td>
+                <td th:text="${a.servico.nome}"></td>
+                <td th:text="${a.barbeiro.nome}"></td>
+                <td th:text="'R$ ' + ${#numbers.formatDecimal(a.valor, 1, 'POINT', 2, 'COMMA')}"></td>
+                <td>
+                    <span class="badge" th:classappend="'badge-' + ${a.status}" th:text="${a.status.descricao}"></span>
+                    <div class="muted" style="font-size:.75rem" th:if="${a.formaPagamento}" th:text="${a.formaPagamento.descricao}"></div>
+                </td>
+                <td>
+                    <div class="actions" th:if="${a.status.name() == 'AGENDADO'}">
+                        <form th:action="@{/admin/agendamentos/{id}/status(id=${a.id})}" method="post">
+                            <input type="hidden" name="status" value="CONCLUIDO">
+                            <input type="hidden" name="data" th:value="${data}">
+                            <select name="formaPagamento" required>
+                                <option th:each="f : ${formasPagamento}" th:value="${f}" th:text="${f.descricao}"></option>
+                            </select>
+                            <button class="btn btn-sm btn-ok" type="submit">Concluir</button>
+                        </form>
+                        <form th:action="@{/admin/agendamentos/{id}/status(id=${a.id})}" method="post">
+                            <input type="hidden" name="status" value="NAO_COMPARECEU">
+                            <input type="hidden" name="data" th:value="${data}">
+                            <button class="btn btn-sm btn-outline" type="submit">Faltou</button>
+                        </form>
+                        <form th:action="@{/admin/agendamentos/{id}/status(id=${a.id})}" method="post"
+                              onsubmit="return confirm('Cancelar este agendamento?')">
+                            <input type="hidden" name="status" value="CANCELADO">
+                            <input type="hidden" name="data" th:value="${data}">
+                            <button class="btn btn-sm btn-danger" type="submit">Cancelar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
