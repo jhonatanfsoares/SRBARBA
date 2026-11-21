@@ -1,0 +1,41 @@
+server:
+  port: ${PORT:8080}
+  servlet:
+    session:
+      timeout: 60m
+
+spring:
+  application:
+    name: srbarba
+  web:
+    locale: pt_BR
+    locale-resolver: fixed
+  # Desenvolvimento: banco H2 em arquivo (./data/srbarba.mv.db), mantém os dados entre execuções.
+  datasource:
+    url: jdbc:h2:file:./data/srbarba;AUTO_SERVER=TRUE
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate.format_sql: true
+  thymeleaf:
+    cache: false
+
+---
+# Produção: execute com --spring.profiles.active=prod e defina as variáveis de ambiente
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/srbarba}
+    username: ${DB_USER:srbarba}
+    password: ${DB_PASSWORD:srbarba}
+  jpa:
+    hibernate:
+      ddl-auto: update   # em evolução do produto, troque por migrações Flyway
+  thymeleaf:
+    cache: true
