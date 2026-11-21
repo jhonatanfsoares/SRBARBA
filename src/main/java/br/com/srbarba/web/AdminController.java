@@ -72,7 +72,7 @@ public class AdminController {
         } catch (RegraNegocioException e) {
             redirect.addFlashAttribute("erro", e.getMessage());
         }
-        redirect.addAttribute("data", data);
+        redirect.addAttribute("data", data.toString()); // ISO yyyy-MM-dd
         return "redirect:/admin/agenda";
     }
 

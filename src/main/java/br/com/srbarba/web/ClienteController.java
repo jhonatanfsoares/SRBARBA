@@ -51,7 +51,13 @@ public class ClienteController {
      * a mesma tela é recarregada mostrando os horários livres.
      */
     @GetMapping("/agendar")
-    public String agendar(@ModelAttribute("form") AgendamentoForm form, Model model) {
+    public String agendar(@ModelAttribute("form") AgendamentoForm form, BindingResult parametrosInvalidos,
+                          Model model) {
+        // Parâmetros inválidos na URL (ex.: data malformada) são ignorados em vez de gerar erro 400
+        if (parametrosInvalidos.hasErrors()) {
+            form = new AgendamentoForm();
+            model.addAttribute("form", form);
+        }
         if (form.getData() == null) {
             form.setData(LocalDate.now());
         }
@@ -83,7 +89,7 @@ public class ClienteController {
             redirect.addFlashAttribute("erro", e.getMessage());
             redirect.addAttribute("servicoId", form.getServicoId());
             redirect.addAttribute("barbeiroId", form.getBarbeiroId());
-            redirect.addAttribute("data", form.getData());
+            redirect.addAttribute("data", String.valueOf(form.getData())); // ISO yyyy-MM-dd
             return "redirect:/cliente/agendar";
         }
         redirect.addFlashAttribute("sucesso", "Horário marcado! Te esperamos na Sr. Barba.");
