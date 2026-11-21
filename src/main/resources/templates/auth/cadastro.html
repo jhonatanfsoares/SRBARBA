@@ -64,7 +64,7 @@
         <p style="margin-top:18px">Já tem conta? <a th:href="@{/login}">Entrar</a></p>
     </div>
 </main>
-<script>
+<script th:inline="none">
     // Máscaras: formatam CPF e telefone enquanto o usuário digita
     function mascaraCpf(v) {
         v = v.replace(/\D/g, '').slice(0, 11);
@@ -80,11 +80,13 @@
         if (v.length <= 10) return '(' + v.slice(0, 2) + ') ' + v.slice(2, 6) + '-' + v.slice(6);
         return '(' + v.slice(0, 2) + ') ' + v.slice(2, 7) + '-' + v.slice(7);
     }
-    [['cpf', mascaraCpf], ['telefone', mascaraTelefone]].forEach(function (par) {
-        var campo = document.getElementById(par[0]);
-        campo.addEventListener('input', function () { campo.value = par[1](campo.value); });
-        campo.value = par[1](campo.value);
-    });
+    function aplicarMascara(id, formatar) {
+        var campo = document.getElementById(id);
+        campo.addEventListener('input', function () { campo.value = formatar(campo.value); });
+        campo.value = formatar(campo.value);
+    }
+    aplicarMascara('cpf', mascaraCpf);
+    aplicarMascara('telefone', mascaraTelefone);
 </script>
 </body>
 </html>
