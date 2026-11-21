@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Barbearia')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('home')}"></nav>
+
+<section class="hero">
+    <div class="container">
+        <img th:src="@{/img/logo.png}" alt="Sr. Barba Barbearia" class="hero-logo">
+        <p>Barbearia clássica no coração da Consolação. Corte, barba na navalha e aquele cafezinho —
+            agende seu horário em poucos cliques.</p>
+        <a th:href="@{/cliente/agendar}" class="btn">Agendar horário</a>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/cadastro}" class="btn btn-outline">Criar minha conta</a>
+    </div>
+</section>
+
+<main class="container">
+    <h2>Serviços</h2>
+    <div class="service-grid">
+        <div class="service" th:each="s : ${servicos}">
+            <h3 th:text="${s.nome}">Corte</h3>
+            <p class="muted" th:text="${s.descricao}"></p>
+            <div class="price" th:text="'R$ ' + ${#numbers.formatDecimal(s.preco, 1, 'POINT', 2, 'COMMA')}">R$ 45,00</div>
+            <div class="muted" th:text="${s.duracaoMinutos} + ' min'"></div>
+        </div>
+    </div>
+
+    <h2 style="margin-top:40px">Nossa equipe</h2>
+    <div class="service-grid">
+        <div class="service" th:each="b : ${barbeiros}">
+            <h3 th:text="${b.nome}"></h3>
+            <p class="muted" th:text="${b.especialidade}"></p>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: rodape}"></footer>
+</body>
+</html>
