@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ops! | Sr. Barba</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<main class="container">
+    <img th:src="@{/img/logo.png}" alt="Sr. Barba" class="auth-logo">
+    <div class="card auth-card" style="text-align:center">
+        <h1>Ops!</h1>
+        <p th:if="${status == 404}">Página não encontrada.</p>
+        <p th:if="${status == 403}">Você não tem acesso a esta página.</p>
+        <p th:unless="${status == 404 or status == 403}">Algo deu errado. Tente novamente em instantes.</p>
+        <a th:href="@{/painel}" class="btn">Voltar ao início</a>
+    </div>
+</main>
+</body>
+</html>
