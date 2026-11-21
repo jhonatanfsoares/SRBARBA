@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfException;
 
 import java.time.Clock;
 import java.time.ZoneId;
@@ -31,7 +32,16 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?saiu")
-                        .permitAll());
+                        .permitAll())
+                // Formulário expirado (servidor reiniciou ou sessão venceu): volta ao login com aviso,
+                // em vez de mostrar erro 403 ao usuário.
+                .exceptionHandling(ex -> ex.accessDeniedHandler((req, res, e) -> {
+                    if (e instanceof CsrfException) {
+                        res.sendRedirect(req.getContextPath() + "/login?expirou");
+                    } else {
+                        res.sendRedirect(req.getContextPath() + "/painel");
+                    }
+                }));
         return http.build();
     }
 
