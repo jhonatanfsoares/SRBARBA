@@ -5,10 +5,11 @@ import br.com.srbarba.repository.*;
 import br.com.srbarba.service.CpfUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -18,9 +19,11 @@ import java.util.Random;
 /**
  * Popula o banco com os dados (fictícios) da Sr. Barba na primeira execução:
  * empresa, administrador, barbeiros, serviços, clientes e histórico de atendimentos.
+ * Roda antes de o servidor web aceitar requisições (SmartInitializingSingleton),
+ * assim nenhuma tela é acessada sem os dados da empresa.
  */
 @Component
-public class DataInitializer implements CommandLineRunner {
+public class DataInitializer implements SmartInitializingSingleton {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
@@ -39,11 +42,12 @@ public class DataInitializer implements CommandLineRunner {
     private final AgendamentoRepository agendamentoRepository;
     private final PasswordEncoder passwordEncoder;
     private final Clock clock;
+    private final TransactionTemplate transactionTemplate;
 
     public DataInitializer(EmpresaRepository empresaRepository, UsuarioRepository usuarioRepository,
                            BarbeiroRepository barbeiroRepository, ServicoRepository servicoRepository,
                            AgendamentoRepository agendamentoRepository, PasswordEncoder passwordEncoder,
-                           Clock clock) {
+                           Clock clock, PlatformTransactionManager transactionManager) {
         this.empresaRepository = empresaRepository;
         this.usuarioRepository = usuarioRepository;
         this.barbeiroRepository = barbeiroRepository;
@@ -51,11 +55,15 @@ public class DataInitializer implements CommandLineRunner {
         this.agendamentoRepository = agendamentoRepository;
         this.passwordEncoder = passwordEncoder;
         this.clock = clock;
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     @Override
-    @Transactional
-    public void run(String... args) {
+    public void afterSingletonsInstantiated() {
+        transactionTemplate.executeWithoutResult(status -> popular());
+    }
+
+    private void popular() {
         if (empresaRepository.count() > 0) {
             return;
         }
