@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Entrar')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('login')}"></nav>
+
+<main class="container">
+    <img th:src="@{/img/logo.png}" alt="Sr. Barba" class="auth-logo">
+    <div class="card auth-card">
+        <h1>Entrar</h1>
+        <p class="muted">Acesse para agendar e acompanhar seus horários.</p>
+
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+        <div th:if="${param.erro}" class="alert alert-erro">E-mail ou senha inválidos, ou conta bloqueada.</div>
+        <div th:if="${param.saiu}" class="alert alert-ok">Você saiu do sistema.</div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="field">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required autofocus autocomplete="username">
+            </div>
+            <div class="field">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn" style="width:100%">Entrar</button>
+        </form>
+
+        <p style="margin-top:18px">Ainda não tem conta? <a th:href="@{/cadastro}">Cadastre-se</a></p>
+        <p class="muted" style="font-size:.82rem">
+            Demonstração — cliente: <b>cliente@email.com</b> / <b>123456</b> ·
+            administrador: <b>admin@srbarba.com.br</b> / <b>admin123</b>
+        </p>
+    </div>
+</main>
+</body>
+</html>

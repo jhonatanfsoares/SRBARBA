@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Criar conta')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('cadastro')}"></nav>
+
+<main class="container">
+    <img th:src="@{/img/logo.png}" alt="Sr. Barba" class="auth-logo">
+    <div class="card auth-card wide">
+        <h1>Criar conta</h1>
+        <p class="muted">Cadastre-se para marcar horários na Sr. Barba.</p>
+
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+
+        <form th:action="@{/cadastro}" th:object="${form}" method="post" novalidate>
+            <div class="field">
+                <label for="nome">Nome completo</label>
+                <input id="nome" th:field="*{nome}" required>
+                <div class="field-error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+            </div>
+            <div class="grid-2">
+                <div class="field">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" th:field="*{email}" required>
+                    <div class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+                <div class="field">
+                    <label for="telefone">Telefone / WhatsApp</label>
+                    <input id="telefone" th:field="*{telefone}" placeholder="(11) 91234-5678" required>
+                    <div class="field-error" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></div>
+                </div>
+                <div class="field">
+                    <label for="cpf">CPF</label>
+                    <input id="cpf" th:field="*{cpf}" placeholder="000.000.000-00" required>
+                    <div class="field-error" th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></div>
+                </div>
+                <div class="field">
+                    <label for="dataNascimento">Data de nascimento</label>
+                    <input type="date" id="dataNascimento" th:field="*{dataNascimento}" required>
+                    <div class="field-error" th:if="${#fields.hasErrors('dataNascimento')}" th:errors="*{dataNascimento}"></div>
+                </div>
+                <div class="field">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" th:field="*{senha}" autocomplete="new-password" required>
+                    <div class="field-error" th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}"></div>
+                </div>
+                <div class="field">
+                    <label for="confirmacaoSenha">Confirmar senha</label>
+                    <input type="password" id="confirmacaoSenha" th:field="*{confirmacaoSenha}" autocomplete="new-password" required>
+                    <div class="field-error" th:if="${#fields.hasErrors('confirmacaoSenha')}" th:errors="*{confirmacaoSenha}"></div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="check"><input type="checkbox" th:field="*{aceitaTermos}">
+                    Li e aceito os termos de uso e a política de privacidade (LGPD).</label>
+                <div class="field-error" th:if="${#fields.hasErrors('aceitaTermos')}" th:errors="*{aceitaTermos}"></div>
+            </div>
+            <div class="field">
+                <label class="check"><input type="checkbox" th:field="*{aceitaComunicacoes}">
+                    Quero receber lembretes de horário e promoções pelo WhatsApp/e-mail.</label>
+            </div>
+            <button type="submit" class="btn" style="width:100%">Criar conta</button>
+        </form>
+        <p style="margin-top:18px">Já tem conta? <a th:href="@{/login}">Entrar</a></p>
+    </div>
+</main>
+</body>
+</html>
