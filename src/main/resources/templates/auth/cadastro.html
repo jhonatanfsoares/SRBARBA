@@ -26,12 +26,12 @@
                 </div>
                 <div class="field">
                     <label for="telefone">Telefone / WhatsApp</label>
-                    <input id="telefone" th:field="*{telefone}" placeholder="(11) 91234-5678" required>
+                    <input id="telefone" th:field="*{telefone}" placeholder="(11) 91234-5678" inputmode="numeric" maxlength="15" autocomplete="tel" required>
                     <div class="field-error" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></div>
                 </div>
                 <div class="field">
                     <label for="cpf">CPF</label>
-                    <input id="cpf" th:field="*{cpf}" placeholder="000.000.000-00" required>
+                    <input id="cpf" th:field="*{cpf}" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" required>
                     <div class="field-error" th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></div>
                 </div>
                 <div class="field">
@@ -64,5 +64,27 @@
         <p style="margin-top:18px">Já tem conta? <a th:href="@{/login}">Entrar</a></p>
     </div>
 </main>
+<script>
+    // Máscaras: formatam CPF e telefone enquanto o usuário digita
+    function mascaraCpf(v) {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        return v.replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    function mascaraTelefone(v) {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        if (v.length === 0) return '';
+        if (v.length <= 2) return '(' + v;
+        if (v.length <= 6) return '(' + v.slice(0, 2) + ') ' + v.slice(2);
+        if (v.length <= 10) return '(' + v.slice(0, 2) + ') ' + v.slice(2, 6) + '-' + v.slice(6);
+        return '(' + v.slice(0, 2) + ') ' + v.slice(2, 7) + '-' + v.slice(7);
+    }
+    [['cpf', mascaraCpf], ['telefone', mascaraTelefone]].forEach(function (par) {
+        var campo = document.getElementById(par[0]);
+        campo.addEventListener('input', function () { campo.value = par[1](campo.value); });
+        campo.value = par[1](campo.value);
+    });
+</script>
 </body>
 </html>

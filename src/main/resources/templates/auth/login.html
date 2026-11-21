@@ -12,6 +12,7 @@
 
         <div th:replace="~{fragments/layout :: alertas}"></div>
         <div th:if="${param.erro}" class="alert alert-erro">E-mail ou senha inválidos, ou conta bloqueada.</div>
+        <div th:if="${param.expirou}" class="alert alert-erro">Sua sessão expirou. Entre novamente.</div>
         <div th:if="${param.saiu}" class="alert alert-ok">Você saiu do sistema.</div>
 
         <form th:action="@{/login}" method="post">
