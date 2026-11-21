@@ -9,7 +9,8 @@
         <img th:src="@{/img/logo.png}" alt="Sr. Barba Barbearia" class="hero-logo">
         <p>Barbearia clássica no coração da Consolação. Corte, barba na navalha e aquele cafezinho —
             agende seu horário em poucos cliques.</p>
-        <a th:href="@{/cliente/agendar}" class="btn">Agendar horário</a>
+        <a sec:authorize="!hasRole('ADMIN')" th:href="@{/cliente/agendar}" class="btn">Agendar horário</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="btn">Abrir painel da barbearia</a>
         <a sec:authorize="!isAuthenticated()" th:href="@{/cadastro}" class="btn btn-outline">Criar minha conta</a>
     </div>
 </section>
